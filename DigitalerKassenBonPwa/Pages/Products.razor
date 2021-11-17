@@ -1,0 +1,106 @@
+﻿@using DigitalerKassenBonPwa.Model
+@using System.Runtime.CompilerServices
+
+<div class="d-flex flex-row ma-4">
+    <MudText Typo="Typo.h4">Produkte</MudText>
+    <MudIconButton Style="border-radius: 50%; align-self: center;" Class="mx-4" Icon="@Icons.Material.Filled.Add" Color="Color.Primary" Variant="Variant.Filled" OnClick="this.AddNewProduct" />
+</div>
+
+
+@if (this.DataProvider.DataContainer != null)
+{
+    <div class="d-flex flex-row flex-wrap ma-3 justify-content-center" style="gap: 12px;">
+        @foreach (var product in this.DataProvider.DataContainer.Products)
+        {
+            <MudCard Style="width: 250px;" Class="d-flex flex-column">
+                <MudCardHeader>
+                    <CardHeaderContent>
+                        <MudText Typo="Typo.h5">@product.Name</MudText>
+                    </CardHeaderContent>
+                    <CardHeaderActions>
+                        <MudIconButton Style="border-radius: 50%" Icon="@Icons.Material.Filled.Edit" OnClick="(() =>  this.EditProduct(product))" Variant="Variant.Outlined" Color="Color.Secondary" />
+                    </CardHeaderActions>
+                </MudCardHeader>
+                <MudCardContent Class="pb-3">
+                    <MudText Class="pb-4" Style="text-align: center; font-weight: bold" Typo="Typo.h5">@($"{product.Price}€")</MudText>
+                    <MudText Style="text-align: center" Typo="Typo.body2">@product.Description</MudText>
+                </MudCardContent>
+                <MudCardActions Class="d-flex flex-column justify-content-end" Style="flex: 1">
+                    <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="(() => this.AddToCart(product))">Kaufen</MudButton>
+                </MudCardActions>
+            </MudCard>
+        }
+    </div>
+}
+
+@code
+{
+    [Inject]
+    public DataProvider DataProvider { get; set; } = null!;
+
+    [Inject]
+    public IDialogService DialogService { get; set; } = null!;
+
+    [Inject]
+    public ISnackbar Snackbar { get; set; } = null!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await this.DataProvider.GetCurrent();
+        this.StateHasChanged();
+
+        this.DataProvider.DataContainerSaved += this.OnDataContainerSaved;
+    }
+
+    private void OnDataContainerSaved(object? sender, EventArgs e)
+    {
+        this.InvokeAsync(this.StateHasChanged);
+    }
+
+    private void AddNewProduct()
+    {
+        var options = new DialogOptions
+        {
+            DisableBackdropClick = true,
+            NoHeader = true
+        };
+
+        var parameters = new DialogParameters();
+        parameters.Add("Product", new Product());
+        this.DialogService.Show<AddProductDialog>(string.Empty, parameters, options);
+    }
+
+    private void EditProduct(Product product)
+    {
+        var options = new DialogOptions
+        {
+            DisableBackdropClick = true,
+            NoHeader = true
+        };
+
+        var parameters = new DialogParameters();
+        parameters.Add("Product", product);
+        this.DialogService.Show<AddProductDialog>(string.Empty, parameters, options);
+    }
+
+    private async Task AddToCart(Product product)
+    {
+        if (this.DataProvider.DataContainer == null)
+        {
+            return;
+        }
+
+        if (!this.DataProvider.DataContainer.ShoppingCart.ProductsInCart.ContainsKey(product.Id))
+        {
+            this.DataProvider.DataContainer.ShoppingCart.ProductsInCart.Add(product.Id, 0);
+        }
+
+        this.DataProvider.DataContainer.ShoppingCart.ProductsInCart[product.Id] += 1;
+        await this.DataProvider.Save();
+
+        this.Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopCenter;
+        this.Snackbar.Configuration.MaxDisplayedSnackbars = 10;
+        this.Snackbar.Add($"[{DateTime.Now:HH:mm:ss}]: Das Produkt '{product.Name}' wurde zum Warenkorb hinzugefügt.",
+            configure: options => { options.HideIcon = true; options.VisibleStateDuration = 1500; options.ShowTransitionDuration = 750; options.HideTransitionDuration = 750; });
+    }
+}

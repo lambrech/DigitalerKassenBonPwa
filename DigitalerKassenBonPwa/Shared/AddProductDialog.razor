@@ -1,0 +1,72 @@
+﻿@using DigitalerKassenBonPwa.Model
+<MudDialog>
+    <DialogContent>
+        <div class="d-flex flex-column">
+            <MudTextField T="string" @bind-Value="this.Name" Variant="Variant.Outlined" Label="Name" Immediate="true"></MudTextField>
+            <MudTextField T="decimal?" @bind-Value="this.Price" Variant="Variant.Outlined" Label="Preis" Adornment="Adornment.End" AdornmentText="€" ></MudTextField>
+            <MudTextField T="string" @bind-Value="this.Description" Variant="Variant.Outlined" Label="Beschreibung" Lines="4"></MudTextField>
+        </div>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="this.Cancel" Variant="Variant.Outlined">Abbrechen</MudButton>
+        <MudButton Color="Color.Primary" OnClick="this.Save" Disabled="!this.IsInputValid()" Variant="Variant.Outlined">Speichern</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+
+    [Inject]
+    public DataProvider DataProvider { get; set; } = null!;
+
+    [CascadingParameter]
+    MudDialogInstance MudDialog { get; set; } = null!;
+
+    [Parameter]
+    public Product Product { get; set; } = null!;
+
+    public string Name { get; set; } = string.Empty;
+
+    public decimal? Price { get; set; }
+
+    public string Description { get; set; } = string.Empty;
+
+    protected override void OnInitialized()
+    {
+        this.Name = this.Product.Name;
+        this.Price = this.Product.Price;
+        this.Description = this.Product.Description;
+    }
+
+    private async Task Save()
+    {
+        if (this.DataProvider.DataContainer == null || !this.IsInputValid())
+        {
+            return;
+        }
+
+        this.Product.Name = this.Name;
+        this.Product.Price = this.Price!.Value;
+        this.Product.Description = this.Description;
+
+        if (!this.DataProvider.DataContainer.Products.Contains(this.Product))
+        {
+            this.DataProvider.DataContainer.Products.Add(this.Product);
+        }
+
+        await this.DataProvider.Save();
+        this.StateHasChanged();
+
+        this.MudDialog.Close(DialogResult.Ok(true));
+    }
+
+    private bool IsInputValid()
+    {
+        return !string.IsNullOrWhiteSpace(this.Name) && this.Price is > 0;
+    }
+
+    private void Cancel()
+    {
+        this.MudDialog.Cancel();
+    }
+
+}

@@ -1,0 +1,52 @@
+﻿@page "/"
+
+<PageTitle>DiKaBo</PageTitle>
+
+<MudAppBar Color="Color.Primary" Fixed="true" Dense="true">
+    <MudSpacer />
+    <MudIconButton Icon="@Icons.Material.Outlined.AddShoppingCart" Color="Color.Inherit" Variant="Variant.Outlined" OnClick="this.SetShowProducts" />
+    <MudSpacer />
+    <MudIconButton Icon="@Icons.Material.Outlined.ShoppingCart" Color="Color.Inherit" Variant="Variant.Outlined" OnClick="this.SetShowShoppingCart" />
+    <MudSpacer />
+    <MudIconButton Icon="@Icons.Material.Filled.Info" Color="Color.Transparent" Style="color: white;" Variant="Variant.Text" OnClick="this.OpenInfoDialog" Edge="Edge.End" />
+</MudAppBar>
+
+<div style="padding-top: 64px;">
+    @if (this.ShowShoppingCart)
+    {
+        <ShoppingCart></ShoppingCart>
+    }
+    else
+    {
+        <Products></Products>
+    }
+</div>
+
+@code
+{
+    [Inject]
+    public IDialogService DialogService { get; set; } = null!;
+
+    public bool ShowShoppingCart { get; set; } = false;
+
+    private void SetShowProducts()
+    {
+        this.ShowShoppingCart = false;
+    }
+
+    private void SetShowShoppingCart()
+    {
+        this.ShowShoppingCart = true;
+    }
+
+    private void OpenInfoDialog()
+    {
+        var options = new DialogOptions
+        {
+            FullWidth = true,
+            MaxWidth = MaxWidth.ExtraLarge,
+        };
+
+        this.DialogService.Show<InfoDialog>("Info", options);
+    }
+}

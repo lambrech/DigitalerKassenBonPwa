@@ -1,0 +1,14 @@
+﻿@inherits LayoutComponentBase
+
+<MudThemeProvider Theme="this.CvjmTheme"/>
+<MudDialogProvider/>
+<MudSnackbarProvider/>
+
+
+
+@this.Body
+
+@code
+{
+    public MudTheme CvjmTheme { get; } = new MudCvjmTheme();
+}

@@ -1,0 +1,43 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly" InitialTargets="GetGitInfo">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ServiceWorkerAssetsManifest>service-worker-assets.js</ServiceWorkerAssetsManifest>
+  </PropertyGroup>
+
+	<Target Name="GetGitInfo">
+		<Exec Command="git -C $(ProjectDir) describe --long --always --dirty --broken --abbrev=50" ConsoleToMSBuild="true">
+			<Output TaskParameter="ConsoleOutput" PropertyName="GitCommitId" />
+		</Exec>
+		<Exec Command="git -C $(ProjectDir) describe --all" ConsoleToMSBuild="true">
+			<Output TaskParameter="ConsoleOutput" PropertyName="GitBranchTag" />
+		</Exec>
+
+		<!-- read the version into the GitVersion itemGroup-->
+		<ReadLinesFromFile File="$(SolutionDir)\.solutionDefaultVersion">
+			<Output TaskParameter="Lines" ItemName="SolutionDefaultVersion" />
+		</ReadLinesFromFile>
+
+		<PropertyGroup>
+			<Version>@(SolutionDefaultVersion)</Version>
+			<InformationalVersion>$(Version) | configName:$(ConfigurationName) | git:$(GitCommitId) | branchOrTag:$(GitBranchTag)</InformationalVersion>
+		</PropertyGroup>
+	</Target>
+
+	<ItemGroup>
+    <PackageReference Include="Blazored.LocalStorage" Version="4.1.5" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="6.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="6.0.0" PrivateAssets="all" />
+    <PackageReference Include="MudBlazor" Version="6.0.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ServiceWorker Include="wwwroot\service-worker.js" PublishedContent="wwwroot\service-worker.published.js" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Model\" />
+  </ItemGroup>
+
+</Project>

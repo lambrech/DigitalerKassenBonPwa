@@ -1,0 +1,140 @@
+﻿@using DigitalerKassenBonPwa.Model
+@using System.Runtime.CompilerServices
+@using MudBlazor.Extensions
+
+<div class="d-flex flex-row ma-4">
+    <MudText Typo="Typo.h4">Warenkorb</MudText>
+</div>
+
+
+@if (this.DataProvider.DataContainer != null)
+{
+    <MudTable Class="ma-2" Elevation="8" Items="@this.DataRows" FixedHeader="true" Dense="true" FixedFooter="true" RowsPerPage="5000" Breakpoint="Breakpoint.None" >
+        <HeaderContent>
+            <MudTh>Produkt</MudTh>
+            <MudTh>Preis (€)</MudTh>
+            <MudTh>Anzahl</MudTh>
+            <MudTh></MudTh>
+            <MudTh>Summe (€)</MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="Name">@context.Product.Name</MudTd>
+            <MudTd Style="text-align:right" DataLabel="Price">@context.Product.Price</MudTd>
+            <MudTd Style="text-align:right" DataLabel="Count">@context.Count</MudTd>
+            <MudTd DataLabel="ModifyCount">
+                <div class="d-flex flex-row" style="gap: 4px;">
+                    @if(context.Count == 0)
+                    {
+                        <MudIconButton Style="border-radius: 50%" OnClick="(() => this.RemoveFromCart(context.Product))"
+                            Icon="@Icons.Material.Filled.DeleteForever" Color="Color.Primary" Variant="Variant.Filled" />
+                    }
+                    else
+                    {
+                        <MudIconButton Style="border-radius: 50%" OnClick="(() => this.ChangeCount(context.Product, CountChangeMode.Decrease))" 
+                            Icon="@Icons.Material.Filled.Remove" Color="Color.Secondary" Variant="Variant.Outlined" />
+                    }
+                    
+                    <MudIconButton Style="border-radius: 50%" OnClick="(() => this.ChangeCount(context.Product, CountChangeMode.Increase))"
+                        Icon="@Icons.Material.Filled.Add" Color="Color.Secondary" Variant="Variant.Outlined" />
+                </div>
+            </MudTd>
+            <MudTd Style="text-align:right" DataLabel="Count">@(context.Product.Price * context.Count)</MudTd>
+        </RowTemplate>
+        <FooterContent>
+            <MudTd></MudTd>
+            <MudTd></MudTd>
+            <MudTd></MudTd>
+            <MudTd></MudTd>
+            <MudTd Style="font-weight: bold; text-align:right">@($"{this.DataRows.Sum(x => x.Count * x.Product.Price)}€")</MudTd>
+        </FooterContent>
+    </MudTable>
+}
+
+@code
+{
+    [Inject]
+    public DataProvider DataProvider { get; set; } = null!;
+
+    public List<DataRow> DataRows { get; private set; } = new();
+
+    public record DataRow(Product Product, int Count);
+
+    public enum CountChangeMode
+    {
+        Increase,
+        Decrease,
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await this.DataProvider.GetCurrent();
+        this.StateHasChanged();
+
+        this.DataProvider.DataContainerSaved += this.OnDataContainerSaved;
+        this.CalcRowData();
+    }
+
+    private void OnDataContainerSaved(object? sender, EventArgs e)
+    {
+        this.CalcRowData();
+        this.InvokeAsync(this.StateHasChanged);
+    }
+
+    private void CalcRowData()
+    {
+        if (this.DataProvider.DataContainer == null)
+        {
+            return;
+        }
+
+        var list = new List<DataRow>();
+
+        foreach (var (key, value) in this.DataProvider.DataContainer.ShoppingCart.ProductsInCart)
+        {
+            var product = this.DataProvider.DataContainer.Products.FirstOrDefault(x => x.Id == key);
+            if (product == null)
+            {
+                continue;
+            }
+
+            list.Add(new DataRow(product, value));
+        }
+
+        this.DataRows = list;
+    }
+
+    private async Task ChangeCount(Product product, CountChangeMode mode)
+    {
+        if (this.DataProvider.DataContainer == null || !this.DataProvider.DataContainer.ShoppingCart.ProductsInCart.ContainsKey(product.Id))
+        {
+            return;
+        }
+
+        switch (mode)
+        {
+            case CountChangeMode.Increase:
+                this.DataProvider.DataContainer.ShoppingCart.ProductsInCart[product.Id] += 1;
+                break;
+            case CountChangeMode.Decrease:
+                this.DataProvider.DataContainer.ShoppingCart.ProductsInCart[product.Id] -= 1;
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(mode), mode, null);
+        }
+
+        await this.DataProvider.Save();
+    }
+
+    private async Task RemoveFromCart(Product product)
+    {
+        if (this.DataProvider.DataContainer == null || !this.DataProvider.DataContainer.ShoppingCart.ProductsInCart.ContainsKey(product.Id))
+        {
+            return;
+        }
+
+        this.DataProvider.DataContainer.ShoppingCart.ProductsInCart.Remove(product.Id);
+
+        await this.DataProvider.Save();
+    }
+
+}

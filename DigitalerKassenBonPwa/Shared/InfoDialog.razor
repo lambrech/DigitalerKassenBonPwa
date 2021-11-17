@@ -1,0 +1,46 @@
+﻿@using DigitalerKassenBonPwa.Model
+<MudDialog>
+    <DialogContent>
+        <div class="d-flex flex-column">
+            <MudText>Bei Fragen oder Problemen, immer gerne (wmlg. auch mit Screenshots) direkt an OKKO weitergeben.</MudText>
+            <div class="d-flex flex-column">
+                <MudTextField @bind-Value="this.Version" Label="Version" Variant="Variant.Outlined" Margin="Margin.Dense" ReadOnly="true"></MudTextField>
+                <MudTextField @bind-Value="this.BuildConfig" Label="BuildConfig" Variant="Variant.Outlined" Margin="Margin.Dense" ReadOnly="true"></MudTextField>
+                <MudTextField @bind-Value="this.CommitId" Label="CommitId" Variant="Variant.Outlined" Margin="Margin.Dense" ReadOnly="true"></MudTextField>
+                <MudTextField @bind-Value="this.FullVersionText" Label="FullVersionText" Variant="Variant.Outlined" Margin="Margin.Dense" ReadOnly="true" Lines="2"></MudTextField>
+            </div>
+        </div>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="this.Cancel" Variant="Variant.Outlined">Schließen</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+
+    [CascadingParameter]
+    MudDialogInstance MudDialog { get; set; } = null!;
+
+    public string Version { get; set; } = string.Empty;
+
+    public string BuildConfig { get; set; } = string.Empty;
+    
+    public string CommitId { get; set; } = string.Empty;
+    
+    public string FullVersionText { get; set; } = string.Empty;
+
+    protected override void OnInitialized()
+    {
+        var info = Extensions.GetVersionInformation();
+        //this.Version = info.version;
+        //this.BuildConfig = info.buildConfig;
+        //this.CommitId = info.commitId;
+        //this.FullVersionText = info.fullVersionText;
+    }
+
+    private void Cancel()
+    {
+        this.MudDialog.Cancel();
+    }
+
+}
