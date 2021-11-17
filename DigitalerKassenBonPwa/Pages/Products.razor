@@ -1,7 +1,7 @@
 ﻿@using DigitalerKassenBonPwa.Model
 @using System.Runtime.CompilerServices
 
-<div class="d-flex flex-row ma-4">
+<div class="d-flex flex-row mx-8 mb-4">
     <MudText Typo="Typo.h4">Produkte</MudText>
     <MudIconButton Style="border-radius: 50%; align-self: center;" Class="mx-4" Icon="@Icons.Material.Filled.Add" Color="Color.Primary" Variant="Variant.Filled" OnClick="this.AddNewProduct" />
 </div>
@@ -13,7 +13,7 @@
         @foreach (var product in this.DataProvider.DataContainer.Products)
         {
             <MudCard Style="width: 250px;" Class="d-flex flex-column">
-                <MudCardHeader>
+                <MudCardHeader Style="display: grid; grid-template-columns: 85% 15%">
                     <CardHeaderContent>
                         <MudText Typo="Typo.h5">@product.Name</MudText>
                     </CardHeaderContent>

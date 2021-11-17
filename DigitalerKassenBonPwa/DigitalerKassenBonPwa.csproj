@@ -4,10 +4,10 @@
 	  <TargetFramework>net6.0</TargetFramework>
 	  <Nullable>enable</Nullable>
 	  <ServiceWorkerAssetsManifest>service-worker-assets.js</ServiceWorkerAssetsManifest>
-	  <Version>0.1.0-alpha.1</Version>
+	  <Version>0.1.0-alpha.2</Version>
   </PropertyGroup>
 
-  <Target Name="GetGitInfo">
+  <Target Name="GetGitInfo" Condition="'$(Configuration)' == 'Release' ">
 	  <Exec Command="git -C $(ProjectDir) describe --long --always --dirty --broken --abbrev=50" ConsoleToMSBuild="true">
 		  <Output TaskParameter="ConsoleOutput" PropertyName="GitCommitId" />
 	  </Exec>

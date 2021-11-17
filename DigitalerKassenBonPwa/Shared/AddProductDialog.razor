@@ -8,8 +8,14 @@
         </div>
     </DialogContent>
     <DialogActions>
-        <MudButton OnClick="this.Cancel" Variant="Variant.Outlined">Abbrechen</MudButton>
-        <MudButton Color="Color.Primary" OnClick="this.Save" Disabled="!this.IsInputValid()" Variant="Variant.Outlined">Speichern</MudButton>
+        @if (this.DataProvider.DataContainer != null && this.DataProvider.DataContainer.Products.Contains(this.Product))
+        {
+            <MudIconButton Style="border-radius: 50%" Disabled="!this.CanDeleteProduct()" OnClick="this.DeleteProduct"
+                           Icon="@Icons.Material.Filled.DeleteForever" Color="Color.Primary" Variant="Variant.Filled"/>
+        }
+        
+        <MudButton Color="Color.Secondary" OnClick="this.Cancel" Variant="Variant.Outlined">Abbrechen</MudButton>
+        <MudButton Color="Color.Secondary" OnClick="this.Save" Disabled="!this.IsInputValid()" Variant="Variant.Outlined">Speichern</MudButton>
     </DialogActions>
 </MudDialog>
 
@@ -64,8 +70,31 @@
         return !string.IsNullOrWhiteSpace(this.Name) && this.Price is > 0;
     }
 
+    private bool CanDeleteProduct()
+    {
+        return this.DataProvider.DataContainer != null && (!this.DataProvider.DataContainer.ShoppingCart.ProductsInCart.ContainsKey(this.Product.Id) || this.DataProvider.DataContainer.ShoppingCart.ProductsInCart[this.Product.Id] == 0);
+    }
+
     private void Cancel()
     {
+        this.MudDialog.Cancel();
+    }
+
+    private async Task DeleteProduct()
+    {
+        if (!this.CanDeleteProduct())
+        {
+            return;
+        }
+
+        if (this.DataProvider.DataContainer!.ShoppingCart.ProductsInCart.ContainsKey(this.Product.Id))
+        {
+            this.DataProvider.DataContainer!.ShoppingCart.ProductsInCart.Remove(this.Product.Id);
+        }
+
+        this.DataProvider.DataContainer!.Products.Remove(this.Product);
+        await this.DataProvider.Save();
+
         this.MudDialog.Cancel();
     }
 

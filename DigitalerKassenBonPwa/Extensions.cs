@@ -15,6 +15,12 @@ public class Extensions
             : ((AssemblyInformationalVersionAttribute)attributes[0]).InformationalVersion;
 
         var versionParts = fullVersionText.Split('|').Select(x => x.Trim()).ToList();
+
+        if (versionParts.Count < 3)
+        {
+            return (fullVersionText, $"Found only {versionParts.Count} parts.", fullVersionText, fullVersionText, fullVersionText);
+        }
+
         var version = versionParts[0];
         var buildConfig = versionParts[1].Replace(@"configName:", string.Empty);
 
