@@ -1,18 +1,18 @@
-﻿@using DigitalerKassenBonPwa.Model
-<MudDialog>
+﻿<MudDialog>
     <DialogContent>
         <div class="d-flex flex-column">
-            <MudText>Bei Fragen oder Problemen, immer gerne (wmlg. auch mit Screenshots) direkt an OKKO weitergeben.</MudText>
-            <div class="d-flex flex-column">
+            <MudText Class="mb-2" Typo="Typo.h5" Style="text-align: center; font-weight: bold;">Info</MudText>
+            <MudText Class="mb-4">Bei Fragen oder Problemen, immer gerne (wmlg. auch mit Screenshots) direkt an OKKO weitergeben.</MudText>
+            <div class="d-flex flex-column" style="gap: 4px;">
                 <MudTextField @bind-Value="this.Version" Label="Version" Variant="Variant.Outlined" Margin="Margin.Dense" ReadOnly="true"></MudTextField>
                 <MudTextField @bind-Value="this.BuildConfig" Label="BuildConfig" Variant="Variant.Outlined" Margin="Margin.Dense" ReadOnly="true"></MudTextField>
-                <MudTextField @bind-Value="this.CommitId" Label="CommitId" Variant="Variant.Outlined" Margin="Margin.Dense" ReadOnly="true"></MudTextField>
-                <MudTextField @bind-Value="this.FullVersionText" Label="FullVersionText" Variant="Variant.Outlined" Margin="Margin.Dense" ReadOnly="true" Lines="2"></MudTextField>
+                <MudTextField @bind-Value="this.CommitId" Label="CommitId" Variant="Variant.Outlined" Margin="Margin.Dense" ReadOnly="true" ></MudTextField>
+                <MudTextField @bind-Value="this.FullVersionText" Label="FullVersionText" Variant="Variant.Outlined" Margin="Margin.Dense" ReadOnly="true" ></MudTextField>
             </div>
         </div>
     </DialogContent>
     <DialogActions>
-        <MudButton OnClick="this.Cancel" Variant="Variant.Outlined">Schließen</MudButton>
+        <MudButton OnClick="this.Cancel" Variant="Variant.Outlined" >Schließen</MudButton>
     </DialogActions>
 </MudDialog>
 
@@ -32,10 +32,10 @@
     protected override void OnInitialized()
     {
         var info = Extensions.GetVersionInformation();
-        //this.Version = info.version;
-        //this.BuildConfig = info.buildConfig;
-        //this.CommitId = info.commitId;
-        //this.FullVersionText = info.fullVersionText;
+        this.Version = info.version;
+        this.BuildConfig = info.buildConfig;
+        this.CommitId = info.commitId;
+        this.FullVersionText = info.fullVersionText;
     }
 
     private void Cancel()
