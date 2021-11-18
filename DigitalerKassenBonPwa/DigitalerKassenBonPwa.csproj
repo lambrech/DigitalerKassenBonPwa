@@ -4,7 +4,7 @@
 	  <TargetFramework>net6.0</TargetFramework>
 	  <Nullable>enable</Nullable>
 	  <ServiceWorkerAssetsManifest>service-worker-assets.js</ServiceWorkerAssetsManifest>
-	  <Version>0.1.0-alpha.2</Version>
+	  <Version>0.1.0-alpha.3</Version>
   </PropertyGroup>
 
   <Target Name="GetGitInfo" Condition="'$(Configuration)' == 'Release' ">
