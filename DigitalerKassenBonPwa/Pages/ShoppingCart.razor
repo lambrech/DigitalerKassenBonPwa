@@ -4,6 +4,7 @@
 
 <div class="d-flex flex-row mx-8 mb-4">
     <MudText Typo="Typo.h4">Warenkorb</MudText>
+    <MudText Typo="Typo.h5" Class="mx-4 align-self-center">@($"({this.DataRows.Sum(x => x.Count * x.Product.Price)} €)")</MudText>
 </div>
 
 
@@ -45,7 +46,7 @@
             <MudTd></MudTd>
             <MudTd></MudTd>
             <MudTd></MudTd>
-            <MudTd Style="font-weight: bold; text-align:right">@($"{this.DataRows.Sum(x => x.Count * x.Product.Price)}€")</MudTd>
+            <MudTd Style="font-weight: bold; text-align:right">@($"{this.DataRows.Sum(x => x.Count * x.Product.Price)} €")</MudTd>
         </FooterContent>
     </MudTable>
 }
