@@ -1,12 +1,30 @@
 ﻿@page "/"
 
+<style>
+    .selected-tab-hr {
+        margin-top: 3px;
+    }
+</style>
+
 <PageTitle>DiKaBo</PageTitle>
 
 <MudAppBar Color="Color.Primary" Fixed="true" Dense="true">
     <MudSpacer />
-    <MudIconButton Icon="@Icons.Material.Outlined.AddShoppingCart" Color="Color.Inherit" Variant="Variant.Outlined" OnClick="this.SetShowProducts" />
+    <div class="d-flex flex-column">
+        <MudIconButton Icon="@Icons.Material.Outlined.AddShoppingCart" Color="Color.Inherit" Variant="Variant.Outlined" OnClick="this.SetShowProducts" />
+        @if (!this.ShowShoppingCart)
+        {
+            <hr class="selected-tab-hr"/>
+        }
+    </div>
     <MudSpacer />
-    <MudIconButton Icon="@Icons.Material.Outlined.ShoppingCart" Color="Color.Inherit" Variant="Variant.Outlined" OnClick="this.SetShowShoppingCart" />
+    <div class="d-flex flex-column">
+        <MudIconButton Icon="@Icons.Material.Outlined.ShoppingCart" Color="Color.Inherit" Variant="Variant.Outlined" OnClick="this.SetShowShoppingCart" />
+        @if (this.ShowShoppingCart)
+        {
+            <hr class="selected-tab-hr"/>
+        }
+    </div>
     <MudSpacer />
     <MudIconButton Icon="@Icons.Material.Filled.Info" Color="Color.Transparent" Style="color: white;" Variant="Variant.Text" OnClick="this.OpenInfoDialog" Edge="Edge.End" />
 </MudAppBar>
