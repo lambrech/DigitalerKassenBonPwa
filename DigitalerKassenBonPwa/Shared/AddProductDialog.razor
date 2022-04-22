@@ -2,9 +2,9 @@
 <MudDialog>
     <DialogContent>
         <div class="d-flex flex-column">
-            <MudTextField T="string" @bind-Value="this.Name" Variant="Variant.Outlined" Label="Name" Immediate="true"></MudTextField>
+            <MudTextField T="string" @bind-Value="this.Name" Variant="Variant.Outlined" Label="Produktname" Immediate="true"></MudTextField>
             <MudTextField T="decimal?" @bind-Value="this.Price" Variant="Variant.Outlined" Label="Preis" Adornment="Adornment.End" AdornmentText="€" ></MudTextField>
-            <MudTextField T="string" @bind-Value="this.Description" Variant="Variant.Outlined" Label="Beschreibung" Lines="4"></MudTextField>
+            <MudTextField T="string" @bind-Value="this.Description" Variant="Variant.Outlined" Label="Beschreibung (optional)" Lines="4"></MudTextField>
         </div>
     </DialogContent>
     <DialogActions>
