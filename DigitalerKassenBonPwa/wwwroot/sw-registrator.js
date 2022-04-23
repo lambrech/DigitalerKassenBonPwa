@@ -10,10 +10,6 @@ window.updateAvailable = new Promise((resolve, reject) => {
         .then(registration => {
             console.info(`Service worker registration successful (scope: ${registration.scope})`);
 
-            setInterval(() => {
-                registration.update();
-            }, 30 * 1000); // 60000ms -> check each minute
-
             registration.onupdatefound = () => {
                 const installingServiceWorker = registration.installing;
                 installingServiceWorker.onstatechange = () => {
@@ -22,6 +18,11 @@ window.updateAvailable = new Promise((resolve, reject) => {
                     }
                 }
             };
+
+            setInterval(() => {
+                console.log("test");
+                registration.update();
+            }, 5 * 1000); // 60000ms -> check each minute
         })
         .catch(error => {
             console.error('Service worker registration failed with error:', error);
